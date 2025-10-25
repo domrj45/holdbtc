@@ -21,18 +21,30 @@
     background: #1a1a1a;
     padding: 15px 25px;
     border-bottom: 2px solid #f7931a;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   h1 {
     color: #f7931a;
     margin: 0;
     font-size: 1.4rem;
+    flex: 1;
   }
 
   .file-controls {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .file-controls p {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin: 0;
+    max-width: 250px;
   }
 
   .file-controls button {
@@ -50,6 +62,7 @@
 
   .file-controls input {
     color: #ccc;
+    font-size: 0.8rem;
   }
 
   .container {
@@ -60,6 +73,7 @@
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
     margin-bottom: 20px;
   }
 
@@ -86,12 +100,17 @@
     background: #d37c0c;
   }
 
+  .table-container {
+    overflow-x: auto;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
     background: #1a1a1a;
     border-radius: 10px;
     overflow: hidden;
+    min-width: 600px;
   }
 
   th, td {
@@ -128,6 +147,7 @@
 
   .summary-item {
     text-align: center;
+    flex: 1 1 20px;
   }
 
   .profit {
@@ -139,6 +159,82 @@
     color: #ff5252;
     font-weight: bold;
   }
+
+  p {
+    word-wrap: break-word;
+    font-size: 0.85rem;
+    color: #bbb;
+  }
+
+/* ----------- Responsividade ----------- */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .file-controls {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .form-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .summary {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 10px;
+    gap: 4px;              /* antes era 10px */
+    margin-top: 10px;      /* antes era 20px */
+  }
+
+  .summary-item {
+    padding: 4px 0;        /* novo: reduz o espaço interno */
+  }
+
+  table th, table td {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    gap: 0;
+    margin: 5px 0;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;               /* pequeno espaço entre rótulo e valor */
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+  }
+
+  .summary-item strong {
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -146,7 +242,7 @@
 <header>
   <h1>Hold BTC Tracker</h1>
   <div class="file-controls">
-  <p>Você precisa sempre carregar e salvar o arquivo com o DCA.</p>
+    <p>Você precisa sempre carregar e salvar o arquivo com o DCA.</p>
     <button id="saveXmlBtn"><i class="fa fa-save"></i> Salvar XML</button>
     <input type="file" id="loadXmlInput" accept=".xml">
   </div>
@@ -154,34 +250,42 @@
 
 <div class="container">
   <div class="form-container">
-    <input type="number" id="valorBRL" placeholder="Valor invertido (BRL)">
+    <input type="number" id="valorBRL" placeholder="Valor investido (BRL)">
     <input type="number" id="sats" placeholder="Satoshis recebidos">
     <button id="addBtn">Adicionar</button>
   </div>
+
   <div class="summary" id="resumo">
-    <div class="summary-item" id="investido"><b>Total Invertido:</b><br>R$ 0,00</div>
-    <div class="summary-item" id="btcTotal"><b>Total em BTC:</b><br>0 sats</div>
-    <div class="summary-item" id="precoMedio"><b>Preço médio:</b><br>R$ 0,00 / sat</div>
-    <div class="summary-item" id="cotacoes"><b>Cotações:</b><br>BTC/USD: ... | USD/BRL: ...</div>
-    <div class="summary-item" id="lucroTotal"><b>Lucro/Prejuízo total:</b><br>R$ 0,00 (0%)</div>
+    <div class="summary-item" id="investido"><b>Total Investido:</b>R$ 0,00</div>
+    <div class="summary-item" id="btcTotal"><b>Total em BTC:</b>0 sats</div>
+    <div class="summary-item" id="precoMedio"><b>Preço médio:</b>R$ 0,00 / sat</div>
+    <div class="summary-item" id="cotacoes"><b>Cotações:</b>BTC/USD: ... | USD/BRL: ...</div>
+    <div class="summary-item" id="lucroTotal"><b>Lucro/Prejuízo total:</b>R$ 0,00 (0%)</div>
   </div>
+
   <br>
-  <table id="tabela">
-    <thead>
-      <tr>
-        <th>Investimento (BRL)</th>
-        <th>BTC Adquirido (sats)</th>
-        <th>Data</th>
-        <th>Cotação USD/BTC</th>
-        <th>Lucro/Prejuízo</th>
-        <th>Editar</th>
-        <th>Excluir</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-<br>
-  <p>uma esmola para esse mendigo: Lightning: weedyhubcap01@walletofsatoshi.com | Liquid: VJLB5zEzKMMTLtoepMcDsY8e6Pin8SttMoQhqmyjsUk9qZTuNfuv2JUuiYSiNpHiswecWKLEKkcBd7vK</p>
+
+  <div class="table-container">
+    <table id="tabela">
+      <thead>
+        <tr>
+          <th>Investimento (BRL)</th>
+          <th>BTC Adquirido (sats)</th>
+          <th>Data</th>
+          <th>Cotação USD/BTC</th>
+          <th>Lucro/Prejuízo</th>
+          <th>Editar</th>
+          <th>Excluir</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <br>
+  <p>Uma esmola para esse mendigo: <br>
+  Lightning: weedyhubcap01@walletofsatoshi.com <br>
+  Liquid: VJLB5zEzKMMTLtoepMcDsY8e6Pin8SttMoQhqmyjsUk9qZTuNfuv2JUuiYSiNpHiswecWKLEKkcBd7vK</p>
 </div>
 
 <script>
@@ -189,7 +293,6 @@ let dados = [];
 let cotacaoBTC = 0;
 let cotacaoUSD = 0;
 
-// Buscar cotações
 async function atualizarCotacoes() {
   try {
     const [btcRes, usdRes] = await Promise.all([
@@ -200,8 +303,8 @@ async function atualizarCotacoes() {
     const usdData = await usdRes.json();
     cotacaoBTC = parseFloat(btcData.price);
     cotacaoUSD = parseFloat(usdData.USDBRL.bid);
-
-    document.getElementById("cotacoes").innerHTML = `<b>Cotações:</b><br>BTC/USD: $${cotacaoBTC.toFixed(2)} | USD/BRL: R$ ${cotacaoUSD.toFixed(2)}`;
+    document.getElementById("cotacoes").innerHTML =
+      `<b>Cotações:</b><br>BTC/USD: $${cotacaoBTC.toFixed(2)} | USD/BRL: R$ ${cotacaoUSD.toFixed(2)}`;
     renderizarTabela();
   } catch (e) {
     document.getElementById("cotacoes").innerHTML = `<b>Cotações:</b><br>Erro ao carregar`;
@@ -217,7 +320,6 @@ function renderizarTabela() {
     const lucro = valorAtual - item.valor;
     const porcentagem = ((lucro / item.valor) * 100).toFixed(2);
     const lucroClass = lucro >= 0 ? "profit" : "loss";
-
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td contenteditable="true" onblur="editarCampo(${i}, 'valor', this.innerText)">${item.valor.toFixed(2)}</td>
@@ -234,14 +336,7 @@ function renderizarTabela() {
 }
 
 function editarCampo(index, campo, valor) {
-  // Limpa formatação e substitui vírgulas
   valor = valor.replace(',', '.').replace(/[^\d.-]/g, '');
-  if (campo === 'valor') dados[index].valor = parseFloat(valor) || 0;
-  if (campo === 'sats') dados[index].sats = parseFloat(valor) || 0;
-  renderizarTabela();
-}
-
-function editarCampo(index, campo, valor) {
   if (campo === 'valor') dados[index].valor = parseFloat(valor) || 0;
   if (campo === 'sats') dados[index].sats = parseFloat(valor) || 0;
   renderizarTabela();
@@ -255,11 +350,11 @@ function atualizarResumo() {
   const lucroTotal = valorAtualTotal - totalInvestido;
   const lucroPercent = totalInvestido > 0 ? (lucroTotal / totalInvestido) * 100 : 0;
   const lucroClass = lucroTotal >= 0 ? "profit" : "loss";
-
-  document.getElementById("investido").innerHTML = `<b>Total Invertido:</b><br>R$ ${totalInvestido.toFixed(2)}`;
+  document.getElementById("investido").innerHTML = `<b>Total Investido:</b><br>R$ ${totalInvestido.toFixed(2)}`;
   document.getElementById("btcTotal").innerHTML = `<b>Total em BTC:</b><br>${totalSats} sats`;
   document.getElementById("precoMedio").innerHTML = `<b>Preço médio:</b><br>R$ ${precoMedio.toFixed(8)} / sat`;
-  document.getElementById("lucroTotal").innerHTML = `<b>Lucro/Prejuízo total:</b><br><span class="${lucroClass}">R$ ${lucroTotal.toFixed(2)} (${lucroPercent.toFixed(2)}%)</span>`;
+  document.getElementById("lucroTotal").innerHTML =
+    `<b>Lucro/Prejuízo total:</b><br><span class="${lucroClass}">R$ ${lucroTotal.toFixed(2)} (${lucroPercent.toFixed(2)}%)</span>`;
 }
 
 document.getElementById("addBtn").addEventListener("click", () => {
@@ -272,13 +367,11 @@ document.getElementById("addBtn").addEventListener("click", () => {
   renderizarTabela();
 });
 
-// Excluir entrada
 function removerEntrada(i) {
   dados.splice(i, 1);
   renderizarTabela();
 }
 
-// Salvar XML
 document.getElementById("saveXmlBtn").addEventListener("click", () => {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<hold>\n`;
   dados.forEach(d => {
@@ -297,7 +390,6 @@ document.getElementById("saveXmlBtn").addEventListener("click", () => {
   link.click();
 });
 
-// Carregar XML
 document.getElementById("loadXmlInput").addEventListener("change", function() {
   const file = this.files[0];
   if (!file) return;

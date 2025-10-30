@@ -150,91 +150,38 @@
     flex: 1 1 20px;
   }
 
-  .profit {
-    color: #4CAF50;
-    font-weight: bold;
-  }
-
-  .loss {
-    color: #ff5252;
-    font-weight: bold;
-  }
-
-  p {
-    word-wrap: break-word;
-    font-size: 0.85rem;
-    color: #bbb;
-  }
-
-/* ----------- Responsividade ----------- */
-@media (max-width: 768px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 15px;
-  }
-
-  .file-controls {
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-  .form-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  input {
-    width: 100%;
-  }
-
-  .summary {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-    padding: 10px;
-    gap: 4px;              /* antes era 10px */
-    margin-top: 10px;      /* antes era 20px */
-  }
-
-  .summary-item {
-    padding: 4px 0;        /* novo: reduz o espaço interno */
-  }
-
-  table th, table td {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .summary {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 0;
-    gap: 0;
-    margin: 5px 0;
-  }
-
-  .summary-item {
+  .calc-sats {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 4px;               /* pequeno espaço entre rótulo e valor */
-    font-size: 0.85rem;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
+    gap: 10px;
+    background: #1b1b1b;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #2c2c2c;
+    margin-top: 15px;
+    flex-wrap: wrap;
   }
 
-  .summary-item strong {
-    font-weight: 600;
-    margin: 0;
-    font-size: 0.85rem;
+  .calc-sats input {
+    width: 150px;
   }
-}
+
+  .calc-sats span {
+    font-size: 0.9rem;
+    color: #f7931a;
+    font-weight: bold;
+  }
+
+  .profit { color: #4CAF50; font-weight: bold; }
+  .loss { color: #ff5252; font-weight: bold; }
+
+  p { word-wrap: break-word; font-size: 0.85rem; color: #bbb; }
+
+  @media (max-width: 768px) {
+    .calc-sats { flex-direction: column; text-align: center; }
+    .calc-sats input { width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -249,11 +196,6 @@
 </header>
 
 <div class="container">
-  <div class="form-container">
-    <input type="number" id="valorBRL" placeholder="Valor investido (BRL)">
-    <input type="number" id="sats" placeholder="Satoshis recebidos">
-    <button id="addBtn">Adicionar</button>
-  </div>
 
   <div class="summary" id="resumo">
     <div class="summary-item" id="investido"><b>Total Investido:</b>R$ 0,00</div>
@@ -261,6 +203,20 @@
     <div class="summary-item" id="precoMedio"><b>Preço médio:</b>R$ 0,00 / sat</div>
     <div class="summary-item" id="cotacoes"><b>Cotações:</b>BTC/USD: ... | USD/BRL: ...</div>
     <div class="summary-item" id="lucroTotal"><b>Lucro/Prejuízo total:</b>R$ 0,00 (0%)</div>
+  </div>
+
+  <!-- CALCULADORA DE SATS -->
+  <div class="calc-sats">
+    <input type="number" id="brlInput" placeholder="Valor em BRL">
+    <input type="number" id="taxaInput" placeholder="Taxa P2P (%)">
+    <button id="calcBtn">Calcular Sats</button>
+    <span id="resultadoSats">Receberá aproximadamente: 0 sats</span>
+  </div>
+    <br>
+    <div class="form-container">
+    <input type="number" id="valorBRL" placeholder="Valor DCA (BRL)">
+    <input type="number" id="sats" placeholder="Satoshis recebidos">
+    <button id="addBtn">Adicionar</button>
   </div>
 
   <br>
@@ -311,6 +267,20 @@ async function atualizarCotacoes() {
   }
 }
 atualizarCotacoes();
+
+// --- Calculadora de Sats ---
+document.getElementById("calcBtn").addEventListener("click", () => {
+  const brl = parseFloat(document.getElementById("brlInput").value);
+  const taxa = parseFloat(document.getElementById("taxaInput").value) || 0;
+  if (!brl || cotacaoBTC === 0 || cotacaoUSD === 0) {
+    return alert("Preencha o valor e aguarde a cotação carregar.");
+  }
+
+  const valorLiquido = brl * (1 - taxa / 100);
+  const btc = valorLiquido / (cotacaoBTC * cotacaoUSD);
+  const sats = btc * 100000000;
+  document.getElementById("resultadoSats").innerHTML = `Receberá: ${sats.toFixed(0)} sats`;
+});
 
 function renderizarTabela() {
   const tbody = document.querySelector("#tabela tbody");
@@ -411,6 +381,5 @@ document.getElementById("loadXmlInput").addEventListener("change", function() {
   reader.readAsText(file);
 });
 </script>
-
 </body>
 </html>

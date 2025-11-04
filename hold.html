@@ -365,7 +365,7 @@ async function atualizarCotacoes() {
   try {
     const [btcRes, usdRes] = await Promise.all([
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
-      fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
+      fetch('https://api.allorigins.win/raw?url=https://economia.awesomeapi.com.br/json/last/USD-BRL')
     ]);
     const btcData = await btcRes.json();
     const usdData = await usdRes.json();

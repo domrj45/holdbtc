@@ -1,2 +1,518 @@
-# holdbtc
-Hold BTC - DCA TRACKER
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hold BTC - DCA Tracker</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 20% 20%, #0b0b0b 40%, #000 100%);
+    color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ==== MENU ==== */
+  nav {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(90deg, #111, #191919);
+    border-bottom: 2px solid #f7931a;
+    box-shadow: 0 0 20px #f7931a40;
+    padding: 10px 0;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    color: #f7931a;
+    text-decoration: none;
+    margin: 6px 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    position: relative;
+    transition: 0.3s;
+  }
+
+  nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: #00eaff;
+    transition: 0.3s;
+    box-shadow: 0 0 8px #00eaff;
+  }
+
+  nav a:hover {
+    color: #00eaff;
+    text-shadow: 0 0 8px #00eaff;
+  }
+
+  nav a:hover::after {
+    width: 100%;
+  }
+
+  /* ==== HEADER ==== */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    padding: 15px 25px;
+    border-bottom: 2px solid #f7931a;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 0 15px #f7931a40;
+  }
+
+  h1 {
+    color: #f7931a;
+    margin: 0;
+    font-size: 1.4rem;
+    text-shadow: 0 0 8px #f7931a;
+  }
+
+  .file-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .file-controls p {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin: 0;
+    max-width: 250px;
+  }
+
+  .file-controls button {
+    background: linear-gradient(90deg, #f7931a, #ff00c8);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-shadow: 0 0 5px #000;
+    box-shadow: 0 0 10px #f7931a80;
+  }
+
+  .file-controls button:hover {
+    background: linear-gradient(90deg, #00eaff, #f7931a);
+    box-shadow: 0 0 15px #00eaff80;
+  }
+
+  .file-controls input {
+    color: #ccc;
+    font-size: 0.8rem;
+  }
+
+  /* ==== LAYOUT ==== */
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(370px, 1fr));
+    gap: 15px;
+    padding: 20px;
+
+    transition: 0.3s ease;
+  }
+
+  /* ==== BOX ==== */
+  .box {
+    background: #1b1b1b;
+    border: 1px solid #2c2c2c;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 0 10px #00eaff20;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .box:hover {
+    box-shadow: 0 0 20px #f7931a50;
+    transform: translateY(-3px);
+  }
+
+  .box-header {
+    background: linear-gradient(90deg, #f7931a, #00eaff);
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    color: #000;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px #f7931a50;
+  }
+
+  .box-content {
+    padding: 15px;
+  }
+
+  /* === SUMMARY (DRE) === */
+  .summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .summary-item b {
+    color: #f7931a;
+  }
+
+  /* === CALCULADORA === */
+  .calc-sats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .calc-sats input {
+    width: 80%;
+    background: #222;
+    color: #fff;
+    border-radius: 8px;
+    border: 1px solid #333;
+    padding: 8px;
+  }
+
+  .calc-sats button {
+    background: linear-gradient(90deg, #f7931a, #ff00c8);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .calc-sats button:hover {
+    background: linear-gradient(90deg, #00eaff, #f7931a);
+  }
+
+  /* === REGISTRAR DCA === */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .form-container input {
+    width: 80%;
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .form-container button {
+    background: linear-gradient(90deg, #00eaff, #f7931a);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .form-container button:hover {
+    background: linear-gradient(90deg, #ff00c8, #00eaff);
+  }
+
+  /* === TABELA === */
+  .table-container {
+    grid-column: 1 / -1;
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a1a1a;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+  }
+
+  th {
+    background: #262626;
+    color: #f7931a;
+  }
+
+  .actions button {
+    background: none;
+    color: #f7931a;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .profit { color: #00ff84; font-weight: bold; }
+  .loss { color: #ff5252; font-weight: bold; }
+
+  p {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #888;
+    font-size: 0.8rem;
+  }
+
+  /* === Responsividade === */
+  @media (max-width: 600px) {
+    h1 { font-size: 1.1rem; }
+    .file-controls { justify-content: center; }
+    nav a { font-size: 0.8rem; margin: 4px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://boltz.exchange">boltz.exchange</a>
+  <a href="https://sideshift.ai">sideshift</a>
+  <a href="https://sideswap.io">sideswap</a>
+  <a href="https://bitcalc.jaonoctus.dev">BitCalc</a>
+  <a href="https://vempradig.com/dig?cupom=DINOPACON">DIGP2P</a>
+</nav>
+
+<header>
+  <h1>Hold BTC Tracker</h1>
+  <div class="file-controls">
+    <p>Carregue ou salve seu arquivo DCA XML</p>
+    <button id="saveXmlBtn"><i class="fa fa-save"></i> Salvar XML</button>
+    <input type="file" id="loadXmlInput" accept=".xml">
+  </div>
+</header>
+
+<div class="container">
+  <!-- DRE -->
+  <div class="box">
+    <div class="box-header">DRE</div>
+    <div class="box-content summary" id="resumo">
+      <div class="summary-item" id="investido"><b>Total Investido:</b> R$ 0,00</div>
+      <div class="summary-item" id="btcTotal"><b>Total em BTC:</b> 0 sats</div>
+      <div class="summary-item" id="precoMedio"><b>Preço Médio:</b> R$ 0,00 BRL</div>
+      <div class="summary-item" id="cotacoes"><b>Cotações:</b> BTC/USD: ... | USD/BRL: ...</div>
+      <div class="summary-item" id="lucroTotal"><b>Lucro/Prejuízo Total:</b> R$ 0,00 (0%)</div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA -->
+  <div class="box">
+    <div class="box-header">Calculadora</div>
+    <div class="box-content calc-sats">
+      <input type="number" id="brlInput" placeholder="Valor em BRL">
+      <input type="number" id="taxaInput" placeholder="Taxa P2P (%)">
+      <button id="calcBtn">Calcular Sats</button>
+      <span id="resultadoSats">Receberá aproximadamente: 0 sats</span>
+    </div>
+  </div>
+
+  <!-- REGISTRAR DCA -->
+  <div class="box">
+    <div class="box-header">Registrar DCA</div>
+    <div class="box-content form-container">
+      <input type="number" id="valorBRL" placeholder="Valor DCA (BRL)">
+      <input type="number" id="sats" placeholder="Satoshis recebidos">
+      <button id="addBtn">Adicionar</button>
+    </div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="table-container">
+    <table id="tabela">
+      <thead>
+        <tr>
+          <th>Investimento (BRL)</th>
+          <th>BTC Adquirido (sats)</th>
+          <th>Data</th>
+          <th>Cotação USD/BTC</th>
+          <th>Lucro/Prejuízo</th>
+          <th>Editar</th>
+          <th>Excluir</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <p>⚡ weedyhubcap01@walletofsatoshi.com<br>🌊 Liquid: VJLB5zEzKMMTLtoepMcDsY8e6Pin8SttMoQhqmyjsUk9qZTuNfuv2JUuiYSiNpHiswecWKLEKkcBd7vK</p>
+</div>
+
+<script>
+let dados = [];
+let cotacaoBTC = 0;
+let cotacaoUSD = 0;
+
+async function atualizarCotacoes() {
+  try {
+    const [btcRes, usdRes] = await Promise.all([
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+      fetch('https://api.allorigins.win/raw?url=https://economia.awesomeapi.com.br/json/last/USD-BRL')
+    ]);
+    const btcData = await btcRes.json();
+    const usdData = await usdRes.json();
+    cotacaoBTC = parseFloat(btcData.price);
+    cotacaoUSD = parseFloat(usdData.USDBRL.bid);
+    document.getElementById("cotacoes").innerHTML =
+      `<b>Cotações:</b><br>BTC/USD: $${cotacaoBTC.toFixed(2)} | USD/BRL: R$ ${cotacaoUSD.toFixed(2)}`;
+    renderizarTabela();
+  } catch (e) {
+    document.getElementById("cotacoes").innerHTML = `<b>Cotações:</b><br>Erro ao carregar`;
+  }
+}
+atualizarCotacoes();
+
+// --- Calculadora de Sats ---
+document.getElementById("calcBtn").addEventListener("click", () => {
+  const brl = parseFloat(document.getElementById("brlInput").value);
+  const taxa = parseFloat(document.getElementById("taxaInput").value) || 0;
+  if (!brl || cotacaoBTC === 0 || cotacaoUSD === 0) {
+    return alert("Preencha o valor e aguarde a cotação carregar.");
+  }
+
+  const formatBRL = (valor) =>
+    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  const taxaValor = brl * (taxa / 100);
+  const valorLiquido = brl - taxaValor;
+  const btc = valorLiquido / (cotacaoBTC * cotacaoUSD);
+  const sats = btc * 100000000;
+
+  const taxaEmBTC = taxaValor / (cotacaoBTC * cotacaoUSD);
+  const taxaEmSats = taxaEmBTC * 100000000;
+
+  document.getElementById("resultadoSats").innerHTML = `
+    <b>Receberá:</b> ${sats.toFixed(0).toLocaleString("pt-BR")} sats<br>
+    <b>Taxa:</b> ${formatBRL(taxaValor)} (${taxaEmSats.toFixed(0)} sats)
+  `;
+});
+
+function renderizarTabela() {
+  const tbody = document.querySelector("#tabela tbody");
+  tbody.innerHTML = "";
+  dados.forEach((item, i) => {
+    const valorAtual = (item.sats / 100000000) * cotacaoBTC * cotacaoUSD;
+    const lucro = valorAtual - item.valor;
+    const porcentagem = ((lucro / item.valor) * 100).toFixed(2);
+    const lucroClass = lucro >= 0 ? "profit" : "loss";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td contenteditable="true" onblur="editarCampo(${i}, 'valor', this.innerText)">${item.valor.toFixed(2)}</td>
+      <td contenteditable="true" onblur="editarCampo(${i}, 'sats', this.innerText)">${item.sats}</td>
+      <td>${item.data}</td>
+      <td>$${item.cotacao}</td>
+      <td class="${lucroClass}">R$ ${lucro.toFixed(2)} (${porcentagem}%)</td>
+      <td class="actions"><button><i class="fa fa-pen"></i></button></td>
+      <td class="actions"><button onclick="removerEntrada(${i})"><i class="fa fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  atualizarResumo();
+}
+
+function editarCampo(index, campo, valor) {
+  valor = valor.replace(',', '.').replace(/[^\d.-]/g, '');
+  if (campo === 'valor') dados[index].valor = parseFloat(valor) || 0;
+  if (campo === 'sats') dados[index].sats = parseFloat(valor) || 0;
+  renderizarTabela();
+}
+
+function atualizarResumo() {
+  const totalInvestido = dados.reduce((sum, d) => sum + d.valor, 0);
+  const totalSats = dados.reduce((sum, d) => sum + d.sats, 0);
+
+  // Cálculo do preço médio em BRL por 1 BTC
+  const precoMedio = totalSats > 0 ? totalInvestido / (totalSats / 100000000) : 0;
+
+  const valorAtualTotal = (totalSats / 100000000) * cotacaoBTC * cotacaoUSD;
+  const lucroTotal = valorAtualTotal - totalInvestido;
+  const lucroPercent = totalInvestido > 0 ? (lucroTotal / totalInvestido) * 100 : 0;
+  const lucroClass = lucroTotal >= 0 ? "profit" : "loss";
+
+  const formatBRL = (valor) =>
+    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  document.getElementById("investido").innerHTML =
+    `<b>Total Investido:</b><br>${formatBRL(totalInvestido)}`;
+  document.getElementById("btcTotal").innerHTML =
+    `<b>Total em BTC:</b><br>${totalSats.toLocaleString("pt-BR")} sats`;
+  document.getElementById("precoMedio").innerHTML =
+    `<b>Preço médio:</b><br>${formatBRL(precoMedio)}`;
+  document.getElementById("lucroTotal").innerHTML =
+    `<b>Lucro/Prejuízo total:</b><br><span class="${lucroClass}">${formatBRL(lucroTotal)} (${lucroPercent.toFixed(2)}%)</span>`;
+}
+
+document.getElementById("addBtn").addEventListener("click", () => {
+  const valor = parseFloat(document.getElementById("valorBRL").value);
+  const sats = parseFloat(document.getElementById("sats").value);
+  if (!valor || !sats) return alert("Preencha os dois campos corretamente.");
+  const data = new Date().toLocaleDateString("pt-BR");
+  const cotacao = cotacaoBTC;
+  dados.push({ valor, sats, data, cotacao });
+  renderizarTabela();
+});
+
+function removerEntrada(i) {
+  dados.splice(i, 1);
+  renderizarTabela();
+}
+
+document.getElementById("saveXmlBtn").addEventListener("click", () => {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<hold>\n`;
+  dados.forEach(d => {
+    xml += `  <entrada>\n`;
+    xml += `    <valor>${d.valor}</valor>\n`;
+    xml += `    <sats>${d.sats}</sats>\n`;
+    xml += `    <data>${d.data}</data>\n`;
+    xml += `    <cotacao>${d.cotacao}</cotacao>\n`;
+    xml += `  </entrada>\n`;
+  });
+  xml += `</hold>`;
+  const blob = new Blob([xml], { type: "application/xml" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "hold-btc.xml";
+  link.click();
+});
+
+document.getElementById("loadXmlInput").addEventListener("change", function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(e.target.result, "application/xml");
+    const entradas = xml.getElementsByTagName("entrada");
+    dados = [];
+    for (let i = 0; i < entradas.length; i++) {
+      const valor = parseFloat(entradas[i].getElementsByTagName("valor")[0].textContent);
+      const sats = parseFloat(entradas[i].getElementsByTagName("sats")[0].textContent);
+      const data = entradas[i].getElementsByTagName("data")[0].textContent;
+      const cotacao = parseFloat(entradas[i].getElementsByTagName("cotacao")[0].textContent);
+      dados.push({ valor, sats, data, cotacao });
+    }
+    renderizarTabela();
+  };
+  reader.readAsText(file);
+});
+</script>
+</body>
+</html>
